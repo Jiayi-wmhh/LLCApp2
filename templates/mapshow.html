@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    a{
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        position:absolute;
+        top: 3%;
+        left: 90%;
+    }
+    a:hover {
+      background-color: yellow;
+    }
+    #fig4 {
+        position: absolute;
+        top: 8%;
+        width: 100%;
+    }
+
+</style>
+</head>
+<body>
+<a id="map" class="map" href="{% url 'mapdata' %}">数据</a><br>
+<div id="fig4">
+    {% include './fig4.html' %}
+</div>
+
+</body>
+</html>

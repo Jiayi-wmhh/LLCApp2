@@ -1,0 +1,20 @@
+{% load static %} 
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+    </style>
+</head>
+</head>
+
+<body>
+	<div class="container">
+        <form action="prime" method="post">
+            {% csrf_token %}
+            <p>错误！请仅选择这个国家出口的产品！</p>
+            <input id="Export" type="submit" name="button" value="Main">
+        </form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title> Stock Information</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <script src="https://code.highcharts.com/stock/highstock.js"></script>
+        <script src="https://code.highcharts.com/stock/modules/data.js"></script>
+        <script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
+        <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+    </head>
+
+    <body>
+        <div class = "searchBox">
+            <div style="margin-top: 100px;">
+                <h2 align = 'center'>Stock Analysis</p>
+                <h4> Enter Ticker Symbol </h3>
+                <form align = 'center' class = "searchForm" action = "result" method="post">
+                    {% csrf_token %}
+                    <input id = "textBox" type = "text" name = "ticker" placeholder="Enter Ticker Symbol" autocomplete="on" required>
+                    <br>
+                    <input id = "textBox" type = "text" name = "SArate" placeholder="SA affect rate" autocomplete="on" required>
+                    <input id = "submit" type = "submit" name = "button" value ="Submit">
+                </form>
+            </div>
+            <div style="margin-top: 100px; text-align: center; ">
+<!--                 <form align = 'center' class = "returnForm" action = "search" method="post">
+                    {% csrf_token %}
+                    <input id = "submit" type = "submit" name = "button" value ="Return">
+                </form> -->
+                <div class = "linkTo">
+                    <a href="http://www.thehemanllc2022.com/stock/search" style="color: white; text-decoration:none;">Stock Analysis</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class = "detailBox" id = "companyDetail" >
+
+        </div>
+        <div class = "summaryBox" id = "summary" >
+
+        </div>
+        <div class =  "chartBox" id = "chart" >
+
+        </div>
+        <div class = "newsBox" id = "news" >
+
+        </div>
+        <div class= "predBox" id = "pred">
+                <canvas id="myChart2" ></canvas>                
+
+        </div>
+        <div class = "SAheader">
+            <p>Sentiment Analysis </p>
+        </div>
+        <div class = "SATwitterBox" id = "twitter" >
+            <div class = "pieChart">
+                <canvas id="myChart" style="width:50%;"></canvas>                
+            </div>
+            <div class="iconBox" >
+                <img src="https://www.freepnglogos.com/uploads/twitter-logo-png/twitter-company-png-logo-5.png" style="width: 200px; height: 150px;">
+            </div>
+
+        </div>
+
+        <div class = "twitter_Box">
+            <table id = "twitter_table">
+                <tr>
+                    <th>Sentiment_Analysis_Score</th>
+                    <th>Text</th>
+                </tr>
+            </table>
+        </div>
+        <div class = "SAFBox" id = "finviz" >
+            <div class = "pieChart">
+                <canvas id="myChart1" style="width:50%;"></canvas>                
+            </div>
+            <div class="iconBox" >
+                <img src="https://www.wallstreetsurvivor.com/wp-content/uploads/2021/10/fv.png" style="width: 200px; height: 100px;">
+            </div>
+        </div>
+        <div class = "finviz_Box">
+            <table id = "finviz_table">
+                <tr>
+                    <th>Sentiment_Analysis_Score</th>
+                    <th>Text</th>
+                </tr>
+            </table>
+        </div>
+    </body> 
+</html>
+
+<script>
+    var company_info_json = JSON.parse('{{ Result.0 | escapejs }}');
+    requestCompany(company_info_json)
+    var company_summary_json = JSON.parse('{{ Result.1 | escapejs }}');
+    requestSummary(company_summary_json)
+    var company_news_json = JSON.parse('{{ Result.2 | escapejs }}');
+    requestNews(company_news_json)
+    var company_charts_json = JSON.parse('{{ Result.3 | escapejs }}');
+    requestTable(company_charts_json)
+
+    //draw pie chart
+    drawTwitter()
+    drawFinviz()
+    drawPrediction()
+
+    function requestCompany(company_info){
+        var companyTable = document.getElementById("companyDetail");
+        companyTable.innerHTML = '<div id = "company_img" class = "img_style"><img src = '+company_info["logo"]+ ' width = "100px" height = "100px"></div>';
+        companyTable.innerHTML += '<div id = "company_table"><table style= "width:80%;margin-top:50px; margin-left:10%">'
+                                + '<tr><th> Company Name</th><td>'+company_info["name"] + '</td>'
+                                + '<tr><th> Stock Ticker Symbol</th><td>'+company_info["ticker"] + '</td>'
+                                + '<tr><th> Stock Exchange Code</th><td>'+company_info["exchange"] + '</td>'
+                                + '<tr><th> Company IPO Date</th><td>'+company_info["ipo"] + '</td>'
+                                + '<tr><th> Category</th><td>'+company_info["finnhubIndustry"] + '</td>'       
+                                +'</table></div>';
+                                                 
+    }
+
+    function requestSummary(summary_info){
+        console.log(summary_info)
+        var summaryTable = document.getElementById("summary");
+        summaryTable.innerHTML += '<div id = "summary_table"><table style= "width:80%;margin-top:70px;margin-left:10%;">'
+                                + '<tr><th> Trading Day</th><td id = "today">'+ToLocalDate(summary_info["t"]) + '</td>'
+                                + '<tr><th> Previous Closing Price</th><td>'+summary_info["pc"] + '</td>'
+                                + '<tr><th> Opening Price</th><td>'+summary_info["o"] + '</td>'
+                                + '<tr><th> Current Price</th><td>'+summary_info["c"] + '</td>'
+                                + '<tr><th> High Price</th><td>'+summary_info["h"] + '</td>'
+                                + '<tr><th> Low Price</th><td>'+summary_info["l"] + '</td>'
+                                + '<tr><th> Change</th><td id = "change">'+summary_info["d"] + '</td>'
+                                + '<tr><th> Change Percent</th><td id = "changeP">'+summary_info["dp"] + '</td>'       
+                                +'</table></div>';
+
+    }
+
+    function ToLocalDate (inDate) {
+        var newdate = new Date(inDate*1000);
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        return newdate.getDate() + " " + months[newdate.getMonth()] + ", " + newdate.getFullYear();
+    }
+
+    function requestTable(table_info){
+        var storckChart = document.getElementById("chart");
+        storckChart.innerHTML = '<div id ="container" style = "width:800px"> </div>';
+        
+        // get data
+        var newdate = new Date();
+        var volume = [];
+        var price = [];
+        var i= 0;
+        for ( i; i < table_info["t"].length; i += 1) {
+
+            volume.push([table_info["t"][i]*1000,table_info["v"][i]]);
+            price.push([table_info["t"][i]*1000,table_info["c"][i]]);
+
+        }   
+        const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+        Highcharts.stockChart('container', {
+
+            rangeSelector: {
+                buttons: [{
+                    type: 'day',
+                    count: 7,
+                    text: '7d',
+                    title: 'View 7 days'
+                }, {
+                    type: 'day',
+                    count: 15,
+                    text: '15d',
+                    title: 'View 15 days'
+                },{
+                    type: 'month',
+                    count: 1,
+                    text: '1m',
+                    title: 'View 1 month'
+                },{
+                    type: 'month',
+                    count: 3,
+                    text: '3m',
+                    title: 'View 3 months'
+                }, {
+                    type: 'month',
+                    count: 6,
+                    text: '6m',
+                    title: 'View 6 months'
+                }]
+            },
+            
+            title: {
+                text: 'Stock Price ' +  newdate.getFullYear() +'-'+ months[newdate.getMonth()]+ '-'+ newdate.getDate()
+            },
+            subtitle: {
+                text: '<a href="https://finnhub.io/." style = "color:blue;"><u>Search Finnhub</u></a>',
+            },
+            yAxis: [{
+                title: {
+                    text: 'Volumn'
+                },            
+                resize: {
+                    enabled: true
+                },
+                opposite:true
+            }, {
+                title: {
+                    text: 'Stock Price'
+                },
+                opposite:false
+            }],
+            tooltip: {
+                shared: true
+            },
+            series: [{
+                data: price,
+                type: 'area',
+                name:'Stock Price',
+                threshold: null,
+                fillColor: {
+                    linearGradient: {
+                        x1: 0,
+                        y1: 0,
+                        x2: 0,
+                        y2: 1
+                    },
+                    stops: [
+                        [0, Highcharts.getOptions().colors[0]],
+                        [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                },
+                yAxis: 1,
+            },
+            {
+                type: 'column',
+                name: 'Volume',
+                data: volume,
+                yAxis: 0,
+                pointWidth: 4,
+            }]
+        });
+    }
+
+    function requestNews(news_info){
+        var news_table = document.getElementById("news");
+        var count = 0;
+        var i = 0;
+        var num = 3;
+        if (news_info.length < 3){
+            num = news_info.length - 1;
+        }
+        while(count < num){
+            if(news_info[i]["image"]){
+                news_table.innerHTML += '<div class = "smnewsbox" style ="margin-top:10px;">'
+                                    + '<img src="'+news_info[i]["image"]+'" width = "100px" height = "100px" style = "margin-top:10px; margin-left:10px;">'
+                                    + '<div style = "margin-left:120px; margin-top:-110px;height:120px;width:70%; position: absolute;font-family: Verdana, Geneva, Tahoma, sans-serif;">'
+                                    + '<h1  style = "font-size:12px;text-aglin:vertical-align;" >'+news_info[i]["headline"]+'</h1>'
+                                    + '<p  style = "font-weight:normal;font-size:14px;text-aglin:vertical-align;" >'+ToLocalDate(news_info[i]["datetime"])+'</p>'
+                                    + '<a href='+news_info[i]["url"]+' style = "color:blue">See Original Post</a>'
+                                    +'</div></div>';        
+                        
+            }
+            count ++;
+            i++;
+        }
+    }
+
+    function drawTwitter(){
+        var twitter_json = JSON.parse('{{ Result.4 | escapejs }}');
+        twitter_json = JSON.parse(twitter_json)
+        var data_size =  twitter_json.length
+        var i = 0;
+        var strong_pos_num = 0;
+        var pos_num = 0;
+        var weak_pos_num = 0;
+        var strong_neg_num = 0;
+        var neg_num = 0;
+        var weak_neg_num = 0;
+        var neu_num= 0;
+        let result_table = document.getElementById("twitter_table");
+        while(i < data_size - 1){
+            if(twitter_json[i]["text"].substring(0,15) == twitter_json[i+1]["text"].substring(0,15)){
+                i++;
+                continue;
+            }
+
+            result_table.innerHTML += '<tr><th>' + twitter_json[i]["compound"] + '</th><th>'  +twitter_json[i]["text"]+'</th><tr>';
+            let val = twitter_json[i]["compound"]
+            if (val >-0.33 && val < 0){
+                weak_neg_num++;
+            }
+            else if (val > - 0.7 && val <= - 0.33){
+                neg_num++;
+            }
+            else if (val <= - 7){
+                strong_neg_num++;
+            }
+            else if(val > 0 & val < 0.33){
+                weak_pos_num++;
+            }
+            else if(val >= 0.33 & val < 0.7){
+                pos_num++;
+            }
+            else if(val >= 0.7){
+                strong_pos_num++;
+            }
+            else{
+                neu_num++;
+            }
+            i++;
+        }
+        //chart
+        var xValues = ["Strongly Positive","Postive","Weakly Positive", "Neutral", "Weakly Negative", "Negative","Strongly Negative"];
+        var yValues = [strong_pos_num,pos_num,weak_pos_num,neu_num,weak_neg_num,neg_num,strong_neg_num];
+        var barColors = [
+        "#228B22",
+        "#7CFC00",
+        "#AFE1AF",
+        "#DFFF00",
+        "#F88379",
+        "#D2042D",
+        "#880808"
+        ];
+        console.log(yValues)
+        new Chart("myChart", {
+        type: "pie",
+        data: {
+            labels: xValues,
+            datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+            }]
+        },
+        options: {
+            title: {
+            display: true,
+            text: "Twitter Sentimental Analysis Result Chart " + twitter_json[0]["ticker"]
+            },
+            legend: {
+                display: true,
+                position: 'right',
+            }    
+        }
+        });
+    }
+
+    function drawFinviz(){
+        var finfiz_json = JSON.parse('{{ Result.5 | escapejs }}');
+        finfiz_json = JSON.parse(finfiz_json)
+        var data_size =  finfiz_json.length
+        var i = 0;
+        var strong_pos_num = 0;
+        var pos_num = 0;
+        var weak_pos_num = 0;
+        var strong_neg_num = 0;
+        var neg_num = 0;
+        var weak_neg_num = 0;
+        var neu_num= 0;
+        let result_table = document.getElementById("finviz_table");
+        while(i < data_size - 1){
+            if(finfiz_json[i]["text"].substring(0,15) == finfiz_json[i+1]["text"].substring(0,15)){
+                i++;
+                continue;
+            }
+            result_table.innerHTML += '<tr><th>' + finfiz_json[i]["compound"] + '</th><th>'  +finfiz_json[i]["text"]+'</th><tr>';
+
+            let val = finfiz_json[i]["compound"]
+            if (val >-0.33 && val < 0){
+                weak_neg_num++;
+            }
+            else if (val > - 0.7 && val <= - 0.33){
+                neg_num++;
+            }
+            else if (val <= - 7){
+                strong_neg_num++;
+            }
+            else if(val > 0 & val < 0.33){
+                weak_pos_num++;
+            }
+            else if(val >= 0.33 & val < 0.7){
+                pos_num++;
+            }
+            else if(val >= 0.7){
+                strong_pos_num++;
+            }
+            else{
+                neu_num++;
+            }
+            i++;
+        }
+        //chart
+        var xValues = ["Strongly Positive","Postive","Weakly Positive", "Neutral", "Weakly Negative", "Negative","Strongly Negative"];
+        var yValues = [strong_pos_num,pos_num,weak_pos_num,neu_num,weak_neg_num,neg_num,strong_neg_num];
+        var barColors = [
+        "#228B22",
+        "#7CFC00",
+        "#AFE1AF",
+        "#DFFF00",
+        "#F88379",
+        "#D2042D",
+        "#880808"
+        ];
+        new Chart("myChart1", {
+        type: "pie",
+        data: {
+            labels: xValues,
+            datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+            }]
+        },
+        options: {
+            title: {
+            display: true,
+            text: "Finviz Sentimental Analysis Result Chart " + finfiz_json[0]["ticker"]
+            },
+            legend: {
+                display: true,
+                position: 'right',
+
+            }   
+        }
+        });
+    }
+
+    function drawPrediction(){
+        var predict = JSON.parse('{{ Result.6 | escapejs }}')
+        var xValues = ["Next Day1","Next Day2","Next Day3","Next Day4","Next Day5","Next Day6","Next Day7"];
+
+        new Chart("myChart2", {
+            type: "line",
+            data: {
+                labels: xValues,
+                datasets: [{
+                fill: false,
+                lineTension: 0,
+                backgroundColor: "rgba(0,0,255,1.0)",
+                borderColor: "rgba(0,0,255,0.1)",
+                data: predict
+                }]
+            },
+            options: {
+                legend: {display: false},
+                title: {
+                display: true,
+                text: "Stock Price Prediction in next seven days"
+                },
+            }	
+        });
+    }
+</script>
+
+<style>
+    .header{
+        font-size: 25px;
+        border: 1px transparent ;
+        border-radius: 4px; 
+        margin-left:20%; 
+        margin-right: 20%;
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    .img_style{
+        margin-left: 35%;
+        width: 100px;
+        height: 100px;
+        margin-top: 20px;
+    }
+
+    table, th, td {
+        border: 1px solid grey;
+        border-left: none;
+        border-right:none;
+        border-collapse: collapse;
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 14px;
+        height: 30px;
+    }
+
+    .searchBox{
+        margin-left: 0px;
+        position:absolute;
+        width: 200px;
+        height: 1200px;
+        margin-top: 0px;
+        border-radius: 10px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bolder;
+        background-color: #34B33D;
+        color: white;
+    }
+
+    .searchForm{
+        margin:auto;
+        position:relative;
+    }
+
+    input[id="submit"]{
+        margin-top: 400px;
+        padding: 7px 25px;
+        text-align: center;
+        text-decoration: none;
+        background-color: #777; /* Green */
+        margin-top: 2px;
+        margin-bottom: 2px;
+        color: white;
+    }  
+
+    input[id="textBox"]{
+        margin-top: 300px;
+        width: 140px;
+        height: 20px;
+        text-align: center;
+        text-decoration: none;
+        margin-top: 2px;
+        margin-bottom: 2px;
+    }
+
+    .detailBox{
+        position: absolute;
+        margin-top: 0px;
+        margin-left: 200px;
+        width:400px;
+        height:400px;
+
+
+    }
+
+    .summaryBox{
+        position: absolute;
+        margin-top: 0px;
+        margin-left: 600px;
+        width:400px;
+        height:400px;
+
+    }
+
+    .smnewsbox{
+        width: 100%;
+        height: 120px;
+        background-color: rgb(228, 235, 235);
+    }
+
+    .newsBox{
+        position: absolute;
+        margin-top: 0px;
+        margin-left: 1000px;
+        width:600px;
+        height:400px;
+
+    }
+    .predBox{
+        position: absolute;
+        margin-top: 400px;
+        margin-left: 1000px;
+        width:600px;
+        height:400px;
+    }
+
+    .linkTo{
+        text-align: center;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 20px;
+        text-decoration: none;
+        /*background-color: #777;*/ /* Green */
+        margin-top: 8px;
+        margin-bottom: 8px;
+        color: white;
+        font-weight: normal;
+    }
+
+    a:hover{
+        background-color: #A1CDEF;
+    }
+
+    .chartBox{
+        position: absolute;
+        margin-top: 400px;
+        margin-left: 200px;
+        width:800px;
+        height:400px;
+
+    }
+
+    .SAheader{
+        position: absolute;
+        width:1400px;
+        height:50px;
+        margin-top: 800px;
+        margin-left: 200px;
+        text-align: center;
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 20px;
+        font-weight: bolder;
+    }
+
+    .SATwitterBox{
+        position: absolute;
+        margin-top: 850px;
+        margin-left: 200px;
+        width:700px;
+        height:350px;
+    }
+
+    .SAFBox{
+        position: absolute;
+        margin-top: 850px;
+        margin-left: 900px;
+        width:700px;
+        height:350px;
+    }
+
+    .pieChart{
+        position: absolute;
+        margin-left: 0px ;
+        margin-top:100px;
+        width: 50%;
+    }
+
+    .iconBox{
+        position: absolute;
+        margin-left: 400px ;
+        margin-top:100px;
+        width:250px;
+        height:250px;
+    }
+    
+    .twitter_Box{
+        position: absolute;
+        margin-left: 200px ;
+        margin-top:1200px;
+        width:650px;
+
+    }
+
+    .finviz_Box{
+        position: absolute;
+        margin-left: 950px ;
+        margin-top:1200px;
+        width:650px;
+
+    }
+</style>

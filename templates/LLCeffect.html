@@ -1,0 +1,81 @@
+{% load static %} 
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+    <style>
+        .outer{
+            margin-top: 0px;
+            margin-left: 0px;
+            width:1350px;
+            height:800px; 
+            display:inline-block;
+            border: 3px solid gray;
+        }
+        .fig4{
+            margin-top: 0px;
+            margin-left: 500px;
+            width:600px;
+            height:800px;   
+            border: 1px solid black; 
+            position: absolute;
+        }
+        .label{
+            margin-top: 800px;
+            margin-left: 900px;
+            width:30px;
+            height:100px;   
+            border: 1px solid black; 
+            position: absolute;
+        }
+        input[id="submit"]{
+            margin-top: 20px;
+            padding: 7px 25px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #699CF5; /* Green */
+            margin-top: 2px;
+            margin-bottom: 2px;
+            color: white;
+        }
+        #label{
+            position: absolute;
+            top: 80%;
+            left: 83%;
+        }
+        p{
+            font-size: 11px;
+        }
+        img{
+            width: 80%;
+        }
+        .center{
+            margin-left:auto;
+            margin-right:auto;
+        }
+    </style>
+</head>
+<body>
+        <div class="container">
+            <form action="window" method="post">
+                {% csrf_token %}
+                <input id="submit" type="submit" name="button" value="Return">
+            </form>
+        </div>
+
+        <div id="fig4">
+            <img src="{% static 'effect.png' %}" class="center"><br>
+        </div>
+
+        <div id="label">
+            <p>1：{{ pro1 }}</p> 
+            <p>2：{{ pro2 }}</p>
+            <p>3：{{ pro3 }}</p>
+            <p>4：{{ pro4 }}</p>
+            <p>5：{{ pro5 }}</p>
+            <p>6：{{ pro6 }}</p>
+        </div>
+    </div>
+
+</body>
+</html>

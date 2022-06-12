@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title> Stock Analysis</title>
+    </head>
+
+    <body>
+        <div class = "searchBox">
+            <div style="margin-top: 100px;">
+                <h2 align = 'center'>Stock Analysis</p>
+                <h4> Enter Ticker Symbol </h3>
+                <form align = 'center' class = "searchForm" action = "result" method="post">
+                    {% csrf_token %}
+                    <input id = "textBox" type = "text" name = "ticker" placeholder="Enter Ticker Symbol" autocomplete="on" required>
+                    <br>
+                    <input id = "textBox" type = "text" name = "SArate" placeholder="SA affect rate" autocomplete="on" required>
+                    <input id = "submit" type = "submit" name = "button" value ="Submit">
+                </form>
+            </div>
+
+        </div>
+        <div class="companyTitle">
+            <h1 align = 'center' style="font-family: Times New Roman, serif;
+        font-size: 100px; margin-top: 300px; font-weight: normal; color:#34B33D;">THE HEMAN LLC</h1>
+        </div>
+
+    </body>
+</html>
+
+<style>
+    .searchBox{
+        margin-left: 0px;
+        position:absolute;
+        width: 200px;
+        height: 1000px;
+        margin-top: 0px;
+        border-radius: 10px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bolder;
+        background-color: #34B33D;
+        color: white;
+    }
+    .companyTitle{
+        margin-left: 200px;
+        position:absolute;
+        width: 1400px;
+        height: 1000px;
+        margin-top: 0px;
+        border-radius: 10px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: normal;
+/*        background-color: #B5C2CB;*/
+    }
+    .searchForm{
+        margin:auto;
+        position:relative;
+    }
+    input[id="submit"]{
+        margin-top: 400px;
+        padding: 7px 25px;
+        text-align: center;
+        text-decoration: none;
+        background-color: #777; /* Green */
+        margin-top: 2px;
+        margin-bottom: 2px;
+        color: white;
+    }    
+    a:hover{
+        background-color: #A1CDEF;
+    }
+    .linkTo{
+        text-align: center;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 20px;
+        text-decoration: none;
+        /*background-color: #777;*/ /* Green */
+        margin-bottom: 8px;
+        font-weight: normal;
+        color: white;
+    }
+    input[id="textBox"]{
+        margin-top: 300px;
+        width: 140px;
+        height: 20px;
+        text-align: center;
+        text-decoration: none;
+        margin-top: 2px;
+        margin-bottom: 2px;
+    }
+</style>

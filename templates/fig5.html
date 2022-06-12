@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    a{
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        position:absolute;
+        top: 3%;
+        left: 90%;
+    }
+    a:hover {
+      background-color: yellow;
+    }
+    #fig6 {
+        position: absolute;
+        top: 8%;
+        width: 100%;
+    }
+    #label{
+    	position: absolute;
+        top: 76%;
+        left: 3%;
+    }
+    p{
+    	font-size: 11px;
+    }
+
+</style>
+</head>
+<body>
+<a id="map" class="map" href="{% url 'prime' %}">返回</a><br>
+<div id="fig6">
+    {% include './fig6.html' %}
+</div>
+<div id="label">
+    <p>国家：{{ country }}</p>	
+    <p>状态：{{ utype }}</p>
+    <p>产品：{{ product }}</p>
+    <p>开始年份：{{ Datestart }}</p>
+    <p>结束年份：{{ Dateend }}</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+{% load static %} 
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+    </style>
+</head>
+</head>
+
+<body>
+	<div class="container">
+        <form action="window" method="post">
+            {% csrf_token %}
+            <p>无效搜索，结果为空！</p>
+            <input id="Export" type="submit" name="button" value="重试">
+        </form>
+	</div>
+</body>
+</html>

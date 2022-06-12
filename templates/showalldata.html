@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		a{
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            position:absolute;
+            top: 3%;
+            left: 90%;
+        }
+        a:hover {
+		  background-color: yellow;
+		}
+		.collapsible {
+		  background-color: #777;
+		  color: white;
+		  cursor: pointer;
+		  padding: 18px;
+		  left: 15%;
+		  width: 85%;
+		  border: none;
+		  text-align: left;
+		  outline: none;
+		  font-size: 15px;
+		}
+/*		#fig3{
+			position: absolute;
+			top: 89%;
+			left: 20%;
+            right: 3%;
+        	padding: 30 100;
+        	display: none;
+  			overflow: hidden;
+    	}*/
+    	#content{
+    		padding: 30 100;
+        	display: none;
+  			overflow: hidden;
+    	}
+    	button:hover {
+		  background-color: #555;
+		}
+
+	</style>
+	<title>Page Title</title>
+</head>
+<body>
+
+<!-- <p>{{ country }} do {{ utype }} of {{ product }} from {{ Datestart }} to {{ Dateend }}</p></br> -->
+<a id="map" class="map" href="{% url 'mapcolor' %}">地图</a><br>
+<p>Full Graph:</p>
+<button id="dropdown1" type="button" class="collapsible">Open Complex Pie Chart</button>
+<div id="content">
+	{% include './fig2.html' %}
+</div>
+<button id="dropdown2" type="button" class="collapsible">Open Complex Bar Chart</button>
+<div id="content">
+	{% include './fig3.html' %}
+</div>
+<p>Deficient Graph:</p>
+<button id="dropdown3" type="button" class="collapsible">Open Simple Pie Chart</button>
+<div id="content">
+	{% include './simplePieChart.html' %}
+</div>
+<button id="dropdown4" type="button" class="collapsible">Open Simple Bar Chart</button>
+<div id="content">
+	{% include './simpleBarChart.html' %}
+</div>
+<p>Complete Database:</p>
+<button id="dropdown5" type="button" class="collapsible">Open Complete Data</button>
+<div id="content">
+{% for key, value in arr %}
+	<p>{{ value }}</p>
+{% endfor %}
+</div>
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+
+</body>
+</html>

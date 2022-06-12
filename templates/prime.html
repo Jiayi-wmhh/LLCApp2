@@ -1,0 +1,58 @@
+{% load static %} 
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Page Title</title>
+    <style>
+    	.container{
+    		position: relative;
+    		width: 50%;
+    		margin: auto;
+    	}
+    	img{
+    		width: 100%;
+    	}
+    	.center{
+    		margin-left:auto;
+    		margin-right:auto;
+    	}
+        input[id="Import"]{
+            position: absolute;
+            color: white;
+            background-color: black;
+            padding: 10px 38px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 10px;
+            left: 43%;
+/*            right: 47%;*/
+            bottom: 54%;
+        }
+        input[id="Export"]{
+            position: absolute;
+            color: white;
+            background-color: black;
+            padding: 10px 38px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 10px;
+            left: 43%;
+/*            right: 47%;*/
+            bottom: 45%;
+        }
+    </style>
+</head>
+</head>
+
+<body>
+	<div class="container">
+	    <img src="{% static 'prime.png' %}" class="center"><br>
+        <form action="multi" method="post">
+            {% csrf_token %}
+            <input id="Import" type="submit" name="button" value="Import"><br />
+            <input id="Export" type="submit" name="button" value="Export">
+        </form>
+	</div>
+</body>
+</html>
