@@ -41,9 +41,6 @@ def result(request):
     tweet_num = 100
     start_date = '2020-01-01'
     epoch_num = 10
-    # affect_rate = request.POST.get('SArate')
-    # affect_rate = float(affect_rate)
-    # print(affect_rate)
     apikey = "&token=c8kjg9qad3ibbdm3takg"
     res = []
 
