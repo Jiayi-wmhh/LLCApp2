@@ -202,70 +202,70 @@ def result(request):
     # LSTM Model Part
 
     # Read historic stock data from yfinance
-    yf_Res = yf.Ticker(ticker)
-    df = yf_Res.history(period="10y",start=start_date, interval='1d')
-    df.reset_index(inplace=True)
-    data_types_dict = {'Date': str}
-    df = df.astype(data_types_dict)
+    # yf_Res = yf.Ticker(ticker)
+    # df = yf_Res.history(period="10y",start=start_date, interval='1d')
+    # df.reset_index(inplace=True)
+    # data_types_dict = {'Date': str}
+    # df = df.astype(data_types_dict)
 
-    print('Number of rows and columns:', df.shape)
-
-
-    data_len = df.shape[0]
-    split_point = round(data_len * 0.9)
-    print('Number of split point',split_point)
-
-    training_set = df.iloc[:data_len, 1:2].values
-    # in performance measurement part use code below
-    # training_set = df.iloc[:split_point, 1:2].values
-
-    test_set = df.iloc[split_point:, 1:2].values
+    # print('Number of rows and columns:', df.shape)
 
 
-    # Feature Scaling
-    sc = MinMaxScaler(feature_range = (0, 1))
-    training_set_scaled = sc.fit_transform(training_set)
-    # Creating a data structure with 60 time-steps and 1 output
-    X_train = []
-    y_train = []
-    for i in range(60, split_point):
-        X_train.append(training_set_scaled[i-60:i, 0])
-        y_train.append(training_set_scaled[i, 0])
-    X_train, y_train = np.array(X_train), np.array(y_train)
-    X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+    # data_len = df.shape[0]
+    # split_point = round(data_len * 0.9)
+    # print('Number of split point',split_point)
 
-    print('Shape of Training set',X_train.shape)
+    # training_set = df.iloc[:data_len, 1:2].values
+    # # in performance measurement part use code below
+    # # training_set = df.iloc[:split_point, 1:2].values
+
+    # test_set = df.iloc[split_point:, 1:2].values
 
 
+    # # Feature Scaling
+    # sc = MinMaxScaler(feature_range = (0, 1))
+    # training_set_scaled = sc.fit_transform(training_set)
+    # # Creating a data structure with 60 time-steps and 1 output
+    # X_train = []
+    # y_train = []
+    # for i in range(60, split_point):
+    #     X_train.append(training_set_scaled[i-60:i, 0])
+    #     y_train.append(training_set_scaled[i, 0])
+    # X_train, y_train = np.array(X_train), np.array(y_train)
+    # X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
 
-    model = Sequential()
-    #Adding the first LSTM layer and some Dropout regularisation
-    model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
-    model.add(Dropout(0.2))
-    # Adding a second LSTM layer and some Dropout regularisation
-    model.add(LSTM(units = 50, return_sequences = True))
-    model.add(Dropout(0.2))
-    # Adding a third LSTM layer and some Dropout regularisation
-    model.add(LSTM(units = 50, return_sequences = True))
-    model.add(Dropout(0.2))
-    # Adding a fourth LSTM layer and some Dropout regularisation
-    model.add(LSTM(units = 50))
-    model.add(Dropout(0.2))
-    # Adding the output layer
-    model.add(Dense(units = 1))
-
-    # Compiling the RNN
-    model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-
-    # Fitting the RNN to the Training set
-    model.fit(X_train, y_train, epochs = epoch_num, batch_size = 32)
+    # print('Shape of Training set',X_train.shape)
 
 
-    # test the model with data after split point
 
-    dataset_train = df.iloc[:split_point, 1:2]
-    dataset_test = df.iloc[split_point:, 1:2]
-    dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
+    # model = Sequential()
+    # #Adding the first LSTM layer and some Dropout regularisation
+    # model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+    # model.add(Dropout(0.2))
+    # # Adding a second LSTM layer and some Dropout regularisation
+    # model.add(LSTM(units = 50, return_sequences = True))
+    # model.add(Dropout(0.2))
+    # # Adding a third LSTM layer and some Dropout regularisation
+    # model.add(LSTM(units = 50, return_sequences = True))
+    # model.add(Dropout(0.2))
+    # # Adding a fourth LSTM layer and some Dropout regularisation
+    # model.add(LSTM(units = 50))
+    # model.add(Dropout(0.2))
+    # # Adding the output layer
+    # model.add(Dense(units = 1))
+
+    # # Compiling the RNN
+    # model.compile(optimizer = 'adam', loss = 'mean_squared_error')
+
+    # # Fitting the RNN to the Training set
+    # model.fit(X_train, y_train, epochs = epoch_num, batch_size = 32)
+
+
+    # # test the model with data after split point
+
+    # dataset_train = df.iloc[:split_point, 1:2]
+    # dataset_test = df.iloc[split_point:, 1:2]
+    # dataset_total = pd.concat((dataset_train, dataset_test), axis = 0)
     '''
     temp = dataset_total.shape[0] - dataset_test.shape[0] - 60
     inputs = dataset_total[temp:].values
@@ -339,40 +339,40 @@ def result(request):
     predicted_stock_price = sc.inverse_transform(predicted_stock_price)
     print(str(ticker) + ":Prediction of Stock Price in future one day is: " + str(predicted_stock_price[0][0]))
     '''
-    temp_list = []
-    result = []
+    # temp_list = []
+    # result = []
 
-    inputs = dataset_total[dataset_total.shape[0] - 60:].values
-    inputs = inputs.reshape(-1,1)
-    inputs = sc.transform(inputs)
-
-
-    input_pred = []
-    input_pred.append(inputs[:60, 0])
-    input_pred = np.array(input_pred)
-    function = 1 + (weight_sum * affect_rate)
-    input_pred[0][59] = input_pred[0][59] * function
-    input_pred = np.reshape(input_pred, (input_pred.shape[0], input_pred.shape[1], 1))
-    predicted_stock_price = model.predict(input_pred)
-    temp_list.append(predicted_stock_price[0][0])
-    predicted_stock_price = sc.inverse_transform(predicted_stock_price)
-
-    result.append(predicted_stock_price[0][0])
+    # inputs = dataset_total[dataset_total.shape[0] - 60:].values
+    # inputs = inputs.reshape(-1,1)
+    # inputs = sc.transform(inputs)
 
 
-    for i in range(1,7):
-        input_pred = []
-        input_pred.append(inputs[i:60, 0])
-        input_pred[0] = np.append(input_pred,temp_list)
-        input_pred = np.array(input_pred)
-        input_pred = np.reshape(input_pred, (input_pred.shape[0], input_pred.shape[1], 1))
+    # input_pred = []
+    # input_pred.append(inputs[:60, 0])
+    # input_pred = np.array(input_pred)
+    # function = 1 + (weight_sum * affect_rate)
+    # input_pred[0][59] = input_pred[0][59] * function
+    # input_pred = np.reshape(input_pred, (input_pred.shape[0], input_pred.shape[1], 1))
+    # predicted_stock_price = model.predict(input_pred)
+    # temp_list.append(predicted_stock_price[0][0])
+    # predicted_stock_price = sc.inverse_transform(predicted_stock_price)
 
-        predicted_stock_price = model.predict(input_pred)
-        temp_list.append(predicted_stock_price[0][0])
-        predicted_stock_price = sc.inverse_transform(predicted_stock_price)
-        result.append(predicted_stock_price[0][0])
+    # result.append(predicted_stock_price[0][0])
 
-    print(result)
-    res.append(result)
+
+    # for i in range(1,7):
+    #     input_pred = []
+    #     input_pred.append(inputs[i:60, 0])
+    #     input_pred[0] = np.append(input_pred,temp_list)
+    #     input_pred = np.array(input_pred)
+    #     input_pred = np.reshape(input_pred, (input_pred.shape[0], input_pred.shape[1], 1))
+
+    #     predicted_stock_price = model.predict(input_pred)
+    #     temp_list.append(predicted_stock_price[0][0])
+    #     predicted_stock_price = sc.inverse_transform(predicted_stock_price)
+    #     result.append(predicted_stock_price[0][0])
+
+    # print(result)
+    # res.append(result)
 
     return render(request,"stock/result.html",{ "Result":res }) 

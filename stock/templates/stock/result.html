@@ -19,7 +19,7 @@
                     {% csrf_token %}
                     <input id = "textBox" type = "text" name = "ticker" placeholder="Enter Ticker Symbol" autocomplete="on" required>
                     <br>
-                    <input id = "textBox" type = "text" name = "SArate" placeholder="SA affect rate" autocomplete="on" required>
+<!--                     <input id = "textBox" type = "text" name = "SArate" placeholder="SA affect rate" autocomplete="on" required> -->
                     <input id = "submit" type = "submit" name = "button" value ="Submit">
                 </form>
             </div>
@@ -422,31 +422,31 @@
         });
     }
 
-    function drawPrediction(){
-        var predict = JSON.parse('{{ Result.6 | escapejs }}')
-        var xValues = ["Next Day1","Next Day2","Next Day3","Next Day4","Next Day5","Next Day6","Next Day7"];
+    // function drawPrediction(){
+    //     var predict = JSON.parse('{{ Result.6 | escapejs }}')
+    //     var xValues = ["Next Day1","Next Day2","Next Day3","Next Day4","Next Day5","Next Day6","Next Day7"];
 
-        new Chart("myChart2", {
-            type: "line",
-            data: {
-                labels: xValues,
-                datasets: [{
-                fill: false,
-                lineTension: 0,
-                backgroundColor: "rgba(0,0,255,1.0)",
-                borderColor: "rgba(0,0,255,0.1)",
-                data: predict
-                }]
-            },
-            options: {
-                legend: {display: false},
-                title: {
-                display: true,
-                text: "Stock Price Prediction in next seven days"
-                },
-            }	
-        });
-    }
+    //     new Chart("myChart2", {
+    //         type: "line",
+    //         data: {
+    //             labels: xValues,
+    //             datasets: [{
+    //             fill: false,
+    //             lineTension: 0,
+    //             backgroundColor: "rgba(0,0,255,1.0)",
+    //             borderColor: "rgba(0,0,255,0.1)",
+    //             data: predict
+    //             }]
+    //         },
+    //         options: {
+    //             legend: {display: false},
+    //             title: {
+    //             display: true,
+    //             text: "Stock Price Prediction in next seven days"
+    //             },
+    //         }	
+    //     });
+    // }
 </script>
 
 <style>
